@@ -1,0 +1,27 @@
+# Thư mục Build và trung gian
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# Cấu hình cá nhân của Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Các file log 
+*.log
+[Ll]og/
+[Ll]ogs/
+
+# NuGet Packages (Sẽ tự động tải lại khi build)
+*.nupkg
+packages/
+project.lock.json
+.nuget/
+
+# Bỏ qua các file sinh tự động bởi giao diện WPF/XAML
+*.g.cs
+*.g.i.cs
+*.baml
