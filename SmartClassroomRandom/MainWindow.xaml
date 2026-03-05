@@ -91,11 +91,14 @@
                 </Border>
 
                 <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="Choose " Foreground="#A0A0A5" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                    <ComboBox Width="150" Margin="0,0,15,0" SelectedIndex="0" 
-                              Background="#2B2D35" Foreground="White" BorderThickness="0">
-                        <ComboBoxItem Content="{Binding CurrentFileName, FallbackValue='Chưa tải file'}"/>
-                    </ComboBox>
+                    <TextBlock Text="File hiện tại:" Foreground="#A0A0A5" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
+
+                    <Border Background="#1E1E24" BorderBrush="#3B82F6" BorderThickness="1" 
+                            CornerRadius="6" Padding="15,8" Margin="0,0,15,0" MinWidth="150" MaxWidth="250">
+                        <TextBlock Text="{Binding CurrentFileName}" Foreground="White" FontWeight="Bold" 
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFileName}"/>
+                    </Border>
 
                     <Button Content="Sync" Command="{Binding SyncExcelCommand}"
                             Background="#3B82F6" Foreground="White" FontWeight="Bold" 
