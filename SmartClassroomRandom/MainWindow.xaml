@@ -1,128 +1,119 @@
 ﻿<Window x:Class="SmartClassroomRandom.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        Title="Smart Classroom Random" Height="600" Width="900"
-        WindowStartupLocation="CenterScreen">
+        Title="Smart Classroom Random" Height="768" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="#1E1E24">
 
-    <Window.Background>
-        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#FFF0F5" Offset="0.0" />
-            <GradientStop Color="#FFD1DC" Offset="1.0" />
-        </LinearGradientBrush>
-    </Window.Background>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <Border Grid.Column="0" Background="#2B2D35" CornerRadius="0,20,20,0">
+            <Grid Margin="0,20,0,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="White" CornerRadius="15" Padding="15" Margin="0,0,0,20">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="15" ShadowDepth="3" Color="Gray" Opacity="0.2"/>
-            </Border.Effect>
+                <StackPanel Grid.Row="0" Margin="20,10,20,40">
+                    <TextBlock Text="Smart Classroom" Foreground="White" FontSize="22" FontWeight="Bold" TextWrapping="Wrap"/>
+                    <TextBlock Text="Randomizer" Foreground="#B465DA" FontSize="18" FontWeight="SemiBold"/>
+                </StackPanel>
 
-            <Grid>
+                <StackPanel Grid.Row="1" Margin="10,0">
+                    <StackPanel.Resources>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Margin" Value="0,5"/>
+                            <Setter Property="Padding" Value="15,12"/>
+                            <Setter Property="Foreground" Value="#A0A0A5"/>
+                            <Setter Property="FontSize" Value="15"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="RadioButton">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}" Cursor="Hand">
+                                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter Property="Background" Value="#3B82F6"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="White"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <RadioButton Content="📋 Xem danh sách lớp" Command="{Binding NavigateExcelCommand}" IsChecked="True"/>
+                    <RadioButton Content="🎲 Random 1 người" Command="{Binding NavigateRandomOneCommand}"/>
+                    <RadioButton Content="🎯 Random N người" Command="{Binding NavigateRandomNCommand}"/>
+                    <RadioButton Content="📅 Xếp lịch báo cáo" Command="{Binding NavigateGroupCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Content="📥 Import Excel" Command="{Binding ImportCommand}"
-                        Padding="15,10" Background="#FF69B4" Foreground="White" 
-                        FontWeight="Bold" BorderThickness="0" Cursor="Hand">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
+                <Border Grid.Column="0" Background="#2B2D35" CornerRadius="10" Padding="15,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="👥 Total " Foreground="#A0A0A5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TotalStudents}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="Sĩ số:" FontSize="16" FontWeight="Bold" Foreground="#333"/>
-                    <TextBlock Text="{Binding Students.Count}" FontSize="16" FontWeight="Bold" Foreground="#FF69B4" Margin="5,0,20,0"/>
-                </StackPanel>
+                        <TextBlock Text="✅ Attend " Foreground="#A0A0A5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding AttendCount, FallbackValue='0'}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <TextBlock Text="Số lượng:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="Bold"/>
-                    <TextBox Text="{Binding RandomCount}" Width="50" TextAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,15,0"/>
+                        <TextBlock Text="🚫 Banned " Foreground="#A0A0A5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding BannedCount, FallbackValue='0'}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
 
-                    <Button Content="🎲 Random 1" Command="{Binding RandomOneCommand}" 
-                            Padding="15,10" Background="#4CAF50" Foreground="White" FontWeight="Bold" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand">
+                        <TextBlock Text="🔍 Search" Foreground="#A0A0A5" FontWeight="SemiBold" Cursor="Hand"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="File hiện tại:" Foreground="#A0A0A5" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
+
+                    <Border Background="#1E1E24" BorderBrush="#3B82F6" BorderThickness="1" 
+                            CornerRadius="6" Padding="15,8" Margin="0,0,15,0" MinWidth="150" MaxWidth="250">
+                        <TextBlock Text="{Binding CurrentFileName}" Foreground="White" FontWeight="Bold" 
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis" ToolTip="{Binding CurrentFileName}"/>
+                    </Border>
+
+                    <Button Content="Sync" Command="{Binding SyncExcelCommand}"
+                            Background="#3B82F6" Foreground="White" FontWeight="Bold" 
+                            Padding="20,8" BorderThickness="0" Cursor="Hand">
                         <Button.Resources>
                             <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
-
-                    <Button Content="🎯 Random N" Command="{Binding RandomMultipleCommand}" 
-                            Padding="15,10" Background="#2196F3" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
+                                <Setter Property="CornerRadius" Value="6"/>
                             </Style>
                         </Button.Resources>
                     </Button>
                 </StackPanel>
             </Grid>
-        </Border>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding Students}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}" />
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Width="160" Height="110" Margin="10" CornerRadius="12" Cursor="Hand">
-                            <Border.Effect>
-                                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="Gray" Opacity="0.15"/>
-                            </Border.Effect>
-
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="White"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                            <Setter Property="Background" Value="#FFB7C5"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-
-                            <Grid Padding="10">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0" Text="{Binding Id, StringFormat='#{0}'}" 
-                                           FontSize="12" Foreground="Gray" FontWeight="SemiBold"/>
-
-                                <TextBlock Grid.Row="1" Text="{Binding Name}" TextWrapping="Wrap" 
-                                           FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" 
-                                           VerticalAlignment="Center" TextAlignment="Center"/>
-
-                                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="🗣️: " FontSize="12"/>
-                                    <TextBlock Text="{Binding SpeakCount}" FontSize="12" FontWeight="Bold" Margin="0,0,10,0"/>
-                                    <TextBlock Text="❌: " FontSize="12"/>
-                                    <TextBlock Text="{Binding AbsenceCount}" FontSize="12" FontWeight="Bold"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>

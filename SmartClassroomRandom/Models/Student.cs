@@ -2,17 +2,20 @@
 
 namespace SmartClassroomRandom.Models
 {
-    // Kế thừa ObservableObject để UI tự động cập nhật khi dữ liệu thay đổi
     public partial class Student : ObservableObject
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public int SpeakCount { get; set; } = 0;
-        public int AbsenceCount { get; set; } = 0;
-        public string Notes { get; set; } = "";
+        public string Name { get; set; } = string.Empty;
 
-        // Thuộc tính này dùng để báo cho UI biết sinh viên này đang được highlight
+        // 4 chỉ số hiển thị trên Card
+        public int PhatBieu { get; set; } = 0;
+        public int KhongTraLoiDuoc { get; set; } = 0;
+        public int KhongDiHoc { get; set; } = 0;
+        public string GhiChu { get; set; } = "";
+
+        // Nếu muốn một vài card có màu đỏ như bạn "Trần Việt Hiếu" trong ảnh, 
+        // ta có thể dùng biến này để binding màu (ví dụ: điểm kém thì thẻ màu đỏ)
         [ObservableProperty]
-        private bool _isSelected = false;
+        private bool _isWarning = false;
     }
 }
