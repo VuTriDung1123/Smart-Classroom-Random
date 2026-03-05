@@ -4,115 +4,170 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="900"
+             d:DesignHeight="600" d:DesignWidth="1000"
              Background="Transparent">
 
     <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
-            <TextBlock Text="🎲 GỌI BÀI NGẪU NHIÊN" Foreground="White" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
-            <TextBlock Text="Cơ chế công bằng: Ưu tiên sinh viên ít phát biểu" Foreground="#A0A0A5" FontSize="14" HorizontalAlignment="Center" Margin="0,5,0,0"/>
-        </StackPanel>
+        <Grid Grid.Column="0" Margin="0,0,20,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <Border Grid.Row="1" Width="400" Height="300" CornerRadius="20" Padding="30" 
-                DataContext="{Binding SelectedSingleStudent}" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Grid.Row="0" Text="🎯 BỐC THĂM SINH VIÊN" Foreground="White" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="30" ShadowDepth="10" Color="Black" Opacity="0.5"/>
-            </Border.Effect>
+            <Border Grid.Row="1" Width="320" Height="240" CornerRadius="20" Padding="20" 
+                    DataContext="{Binding SelectedSingleStudent}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="30" ShadowDepth="5" Color="Black" Opacity="0.4"/>
+                </Border.Effect>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#4A90E2" Offset="0"/>
+                        <GradientStop Color="#2A5298" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
 
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#4A90E2" Offset="0"/>
-                    <GradientStop Color="#2A5298" Offset="1"/>
-                </LinearGradientBrush>
-            </Border.Background>
+                <Grid>
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Name}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
 
-            <Grid>
-                <Grid.Style>
-                    <Style TargetType="Grid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{Binding Id, StringFormat='Mã số: {0}'}" Foreground="#D0D0D0" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    <TextBlock Grid.Row="1" Text="{Binding Name}" TextWrapping="Wrap" FontSize="32" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
+
+                    <Border Grid.Row="2" Background="#1E1E24" Opacity="0.8" CornerRadius="10" Padding="10">
+                        <UniformGrid Columns="3">
+                            <StackPanel>
+                                <TextBlock Text="Phát biểu" Foreground="#A0A0A5" FontSize="11" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding PhatBieu}" Foreground="#4CAF50" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Điểm cộng" Foreground="#A0A0A5" FontSize="11" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding DiemCong}" Foreground="#FFD700" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Vắng" Foreground="#A0A0A5" FontSize="11" HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding KhongDiHoc}" Foreground="#F44336" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </UniformGrid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <TextBlock Grid.Row="1" Text="SẴN SÀNG!" Foreground="#404040" FontSize="40" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Name}" Value="{x:Null}">
-                                <Setter Property="Visibility" Value="Hidden"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding Name}" Value="">
-                                <Setter Property="Visibility" Value="Hidden"/>
+                            <DataTrigger Binding="{Binding SelectedSingleStudent}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
-                </Grid.Style>
+                </TextBlock.Style>
+            </TextBlock>
 
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <Button Grid.Row="2" Command="{Binding RandomOneCommand}" HorizontalAlignment="Center" Margin="0,20,0,0" Padding="40,15" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#FF416C" Offset="0"/>
+                        <GradientStop Color="#FF4B2B" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+                <TextBlock Text="🎲 GỌI NGẪU NHIÊN" Foreground="White" FontSize="18" FontWeight="Bold"/>
+            </Button>
+        </Grid>
 
-                <TextBlock Grid.Row="0" Text="{Binding Id, StringFormat='Mã số: {0}'}" 
-                           Foreground="#D0D0D0" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+        <Rectangle Grid.Column="1" Fill="#32343E" Margin="0,20"/>
 
-                <TextBlock Grid.Row="1" Text="{Binding Name}" TextWrapping="Wrap" 
-                           FontSize="40" FontWeight="Bold" Foreground="White"
-                           HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
+        <Grid Grid.Column="2" Margin="20,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-                <Border Grid.Row="2" Background="#1E1E24" Opacity="0.8" CornerRadius="10" Padding="15">
-                    <UniformGrid Columns="3">
-                        <StackPanel>
-                            <TextBlock Text="Phát biểu" Foreground="#A0A0A5" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding PhatBieu}" Foreground="#4CAF50" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel>
-                            <TextBlock Text="Không TL" Foreground="#A0A0A5" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding KhongTraLoiDuoc}" Foreground="#FF9800" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel>
-                            <TextBlock Text="Vắng" Foreground="#A0A0A5" FontSize="12" HorizontalAlignment="Center"/>
-                            <TextBlock Text="{Binding KhongDiHoc}" Foreground="#F44336" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </UniformGrid>
-                </Border>
-            </Grid>
-        </Border>
+            <TextBlock Grid.Row="0" Text="✨ THẺ NHÂN PHẨM" Foreground="#FFB7C5" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,20"/>
 
-        <TextBlock Grid.Row="1" Text="SẴN SÀNG!" Foreground="#404040" FontSize="50" FontWeight="Bold" 
-                   HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock.Style>
-                <Style TargetType="TextBlock">
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedSingleStudent}" Value="{x:Null}">
-                            <Setter Property="Visibility" Value="Visible"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-        </TextBlock>
+            <Border Grid.Row="1" Width="320" Height="240" CornerRadius="20" Padding="25" 
+                    Background="{Binding GachaColor}" VerticalAlignment="Center" HorizontalAlignment="Center">
 
-        <Button Grid.Row="2" Command="{Binding RandomOneCommand}"
-                HorizontalAlignment="Center" Margin="0,30,0,0" Padding="50,20" Cursor="Hand">
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="15" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="25" ShadowDepth="0" Color="{Binding GachaColor}" Opacity="0.5"/>
+                </Border.Effect>
+
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Visibility" Value="Hidden"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsGachaRevealed}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{Binding GachaRarity}" Foreground="White" FontSize="20" FontWeight="Black" FontStyle="Italic" HorizontalAlignment="Left" Opacity="0.8"/>
+
+                    <TextBlock Grid.Row="1" Text="{Binding GachaTitle}" TextWrapping="Wrap" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
+
+                    <Border Grid.Row="2" Background="#1E1E24" Opacity="0.9" CornerRadius="10" Padding="12">
+                        <TextBlock Text="{Binding GachaDescription}" TextWrapping="Wrap" Foreground="White" FontSize="13" FontWeight="SemiBold" TextAlignment="Center"/>
                     </Border>
-                </ControlTemplate>
-            </Button.Template>
-            <Button.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="#FF416C" Offset="0"/>
-                    <GradientStop Color="#FF4B2B" Offset="1"/>
-                </LinearGradientBrush>
-            </Button.Background>
+                </Grid>
+            </Border>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="🎲" FontSize="24" Margin="0,0,10,0"/>
-                <TextBlock Text="QUAY SỐ" Foreground="White" FontSize="22" FontWeight="Bold" VerticalAlignment="Center"/>
-            </StackPanel>
-        </Button>
+            <Button Grid.Row="2" Command="{Binding RollGachaCommand}" HorizontalAlignment="Center" Margin="0,20,0,0" Padding="40,15" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#EE9CA7" Offset="0"/>
+                        <GradientStop Color="#FFDDE1" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+                <TextBlock Text="🔮 RÚT HIỆU ỨNG" Foreground="#1E1E24" FontSize="18" FontWeight="Bold"/>
+            </Button>
+        </Grid>
+
     </Grid>
 </UserControl>
