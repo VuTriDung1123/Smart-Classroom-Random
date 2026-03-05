@@ -4,6 +4,7 @@
         Title="Smart Classroom Random" Height="768" Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="#1E1E24">
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="260"/>
@@ -15,7 +16,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Margin="20,10,20,40">
@@ -59,29 +59,58 @@
                     <RadioButton Content="🎯 Random N người" Command="{Binding NavigateRandomNCommand}"/>
                     <RadioButton Content="📅 Xếp lịch báo cáo" Command="{Binding NavigateGroupCommand}"/>
                 </StackPanel>
-
-                <Border Grid.Row="2" Margin="20,0" Background="#1E1E24" CornerRadius="12" Padding="15">
-                    <StackPanel>
-                        <TextBlock Text="Dữ liệu hiện tại:" Foreground="#A0A0A5" FontSize="12" Margin="0,0,0,5"/>
-                        <TextBlock Text="{Binding CurrentFileName, FallbackValue='Chưa tải file'}" Foreground="White" FontWeight="Bold" Margin="0,0,0,15" TextTrimming="CharacterEllipsis"/>
-
-                        <Button Content="📥 Tải Excel" Command="{Binding SyncExcelCommand}"
-                                Background="#EE609C" Foreground="White" FontWeight="Bold" 
-                                Padding="0,10" BorderThickness="0" Cursor="Hand">
-                            <Button.Resources>
-                                <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="8"/>
-                                </Style>
-                            </Button.Resources>
-                        </Button>
-                    </StackPanel>
-                </Border>
             </Grid>
         </Border>
 
-        <Border Grid.Column="1" Margin="20">
-            <ContentControl Content="{Binding CurrentView}" />
-        </Border>
+        <Grid Grid.Column="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="#2B2D35" CornerRadius="10" Padding="15,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="👥 Total " Foreground="#A0A0A5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TotalStudents}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
+
+                        <TextBlock Text="✅ Attend " Foreground="#A0A0A5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding AttendCount, FallbackValue='0'}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
+
+                        <TextBlock Text="🚫 Banned " Foreground="#A0A0A5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding BannedCount, FallbackValue='0'}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
+
+                        <TextBlock Text="🔍 Search" Foreground="#A0A0A5" FontWeight="SemiBold" Cursor="Hand"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Choose " Foreground="#A0A0A5" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <ComboBox Width="150" Margin="0,0,15,0" SelectedIndex="0" 
+                              Background="#2B2D35" Foreground="White" BorderThickness="0">
+                        <ComboBoxItem Content="{Binding CurrentFileName, FallbackValue='Chưa tải file'}"/>
+                    </ComboBox>
+
+                    <Button Content="Sync" Command="{Binding SyncExcelCommand}"
+                            Background="#3B82F6" Foreground="White" FontWeight="Bold" 
+                            Padding="20,8" BorderThickness="0" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="6"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <ContentControl Grid.Row="1" Content="{Binding CurrentView}" />
+
+        </Grid>
     </Grid>
 </Window>

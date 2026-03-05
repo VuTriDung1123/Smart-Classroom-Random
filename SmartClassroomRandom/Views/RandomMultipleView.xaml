@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="SmartClassroomRandom.Views.RandomMultipleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900"
+             Background="Transparent">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#2B2D35" CornerRadius="12" Padding="15" Margin="0,0,0,20">
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
+
+                <Border Background="#1E1E24" CornerRadius="8" Padding="15,10" Margin="0,0,15,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Number of students: " Foreground="White" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding GenerateCount}" Width="40" Background="Transparent" Foreground="White" 
+                                 BorderThickness="0" TextAlignment="Center" FontWeight="Bold" FontSize="16"/>
+                    </StackPanel>
+                </Border>
+
+                <Button Content="Generate" Command="{Binding GenerateMultipleCommand}"
+                        Foreground="White" FontWeight="Bold" FontSize="15"
+                        Padding="30,10" BorderThickness="0" Cursor="Hand">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#B465DA" Offset="0.0" />
+                            <GradientStop Color="#CF6CC9" Offset="0.5" />
+                            <GradientStop Color="#EE609C" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding SelectedStudents}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="170" Height="220" Margin="0,0,15,15" CornerRadius="12" Padding="15">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#4A90E2" Offset="0"/>
+                                    <GradientStop Color="#2A5298" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Text="{Binding Name}" TextWrapping="Wrap" 
+                                           FontSize="22" FontWeight="Bold" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
+
+                                <StackPanel Grid.Row="1">
+                                    <Rectangle Height="1" Fill="#FFFFFF" Opacity="0.2" Margin="0,0,0,8"/>
+
+                                    <Grid Margin="0,2">
+                                        <TextBlock Text="Phát biểu:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding PhatBieu}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <Grid Margin="0,2">
+                                        <TextBlock Text="Không trả lời:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding KhongTraLoiDuoc}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <Grid Margin="0,2">
+                                        <TextBlock Text="Không đi học:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding KhongDiHoc}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <Grid Margin="0,2">
+                                        <TextBlock Text="Ghi chú:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding GhiChu}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"
+                                                   TextTrimming="CharacterEllipsis" MaxWidth="70"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
