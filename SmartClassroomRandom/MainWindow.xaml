@@ -58,6 +58,7 @@
                     <RadioButton Content="🎲 Random 1 người" Command="{Binding NavigateRandomOneCommand}"/>
                     <RadioButton Content="🎯 Random N người" Command="{Binding NavigateRandomNCommand}"/>
                     <RadioButton Content="📅 Xếp lịch báo cáo" Command="{Binding NavigateGroupCommand}"/>
+                    <RadioButton Content="⚙️ Cài đặt chung" Command="{Binding NavigateSettingsCommand}"/>
                 </StackPanel>
             </Grid>
         </Border>
