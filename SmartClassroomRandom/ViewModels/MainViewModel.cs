@@ -179,18 +179,24 @@ namespace SmartClassroomRandom.ViewModels
             }
         }
 
-        // ================= 7. COMMAND: XẾP LỊCH BÁO CÁO NHÓM =================
+        // ================= 7. COMMAND: XẾP LỊCH BÁO CÁO NHÓM (CÓ ĐỌC GIỌNG NÓI) =================
         [RelayCommand]
-        private void GenerateSchedule()
+        private async Task GenerateScheduleAsync()
         {
             if (TotalGroups <= 0 || TotalDays <= 0) return;
+
+            // Xóa danh sách cũ trên màn hình
+            ScheduleDays.Clear();
+
+            // 1. Chị Google đọc câu mở đầu
+            string intro = $"Bắt đầu xếp lịch báo cáo cho {TotalGroups} nhóm, trong {TotalDays} ngày.";
+            await VoiceService.SpeakAsync(intro);
 
             var random = new Random();
 
             // Tạo danh sách các nhóm (1, 2, 3...) và xáo trộn ngẫu nhiên
             var allGroups = Enumerable.Range(1, TotalGroups).OrderBy(x => random.Next()).ToList();
 
-            ScheduleDays.Clear();
             int currentGroupIndex = 0;
             int groupsPerDay = (int)Math.Ceiling((double)TotalGroups / TotalDays);
 
@@ -207,9 +213,21 @@ namespace SmartClassroomRandom.ViewModels
 
                 if (day.Groups.Count > 0)
                 {
+                    // Đưa ngày này lên giao diện (giao diện sẽ tự động chạy animation rớt thẻ xuống)
                     ScheduleDays.Add(day);
+
+                    // Tạo câu văn cho chị Google đọc ngày hôm đó
+                    // Ví dụ: "Ngày 1 gồm: Nhóm 5, Nhóm 9, Nhóm 2"
+                    string groupNames = string.Join(", ", day.Groups);
+                    string textToRead = $"{day.DayName} gồm: {groupNames}";
+
+                    // Đợi chị Google đọc xong danh sách nhóm của ngày này rồi mới tạo ngày tiếp theo
+                    await VoiceService.SpeakAsync(textToRead);
                 }
             }
+
+            // Đọc câu chốt khi xong việc
+            await VoiceService.SpeakAsync("Đã xếp lịch xong. Chúc các nhóm chuẩn bị bài tốt!");
         }
     }
 }
