@@ -13,28 +13,31 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" Background="#2B2D35" CornerRadius="12" Padding="15" Margin="0,0,0,20">
+        <Border Grid.Row="0" Background="#2B2D35" CornerRadius="12" Padding="20,15" Margin="0,0,0,25">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Color="Black" Opacity="0.2"/>
+            </Border.Effect>
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
 
                 <Border Background="#1E1E24" CornerRadius="8" Padding="15,10" Margin="0,0,15,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Tổng số nhóm: " Foreground="#A0A0A5" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding TotalGroups}" Width="40" Background="Transparent" Foreground="White" 
+                        <TextBox Text="{Binding TotalGroups}" Width="50" Background="Transparent" Foreground="White" 
                                  BorderThickness="0" TextAlignment="Center" FontWeight="Bold" FontSize="16"/>
                     </StackPanel>
                 </Border>
 
-                <Border Background="#1E1E24" CornerRadius="8" Padding="15,10" Margin="0,0,15,0">
+                <Border Background="#1E1E24" CornerRadius="8" Padding="15,10" Margin="0,0,20,0">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Số ngày báo cáo: " Foreground="#A0A0A5" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBox Text="{Binding TotalDays}" Width="40" Background="Transparent" Foreground="White" 
+                        <TextBox Text="{Binding TotalDays}" Width="50" Background="Transparent" Foreground="White" 
                                  BorderThickness="0" TextAlignment="Center" FontWeight="Bold" FontSize="16"/>
                     </StackPanel>
                 </Border>
 
-                <Button Content="📅 Xếp Lịch Ngẫu Nhiên" Command="{Binding GenerateScheduleCommand}"
+                <Button Content="📅 XẾP LỊCH NGAY" Command="{Binding GenerateScheduleCommand}"
                         Foreground="White" FontWeight="Bold" FontSize="15"
-                        Padding="25,10" BorderThickness="0" Cursor="Hand">
+                        Padding="30,12" BorderThickness="0" Cursor="Hand">
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                             <GradientStop Color="#00B4DB" Offset="0.0" />
@@ -52,7 +55,6 @@
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding ScheduleDays}">
-
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical"/>
@@ -61,7 +63,26 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="#2B2D35" CornerRadius="12" Padding="20" Margin="0,0,0,15">
+                        <Border Background="#2B2D35" CornerRadius="12" Padding="20" Margin="0,0,0,20">
+
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                From="0,-40,0,20" To="0,0,0,20"
+                                                                Duration="0:0:0.4">
+                                                <ThicknessAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </ThicknessAnimation.EasingFunction>
+                                            </ThicknessAnimation>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                             From="0" To="1" Duration="0:0:0.4"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
+
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -69,10 +90,17 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Text="{Binding DayName}" 
-                                           Foreground="#B465DA" FontSize="20" FontWeight="Bold"/>
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Background="#4A90E2" CornerRadius="6" Padding="10,5" Margin="0,0,10,0">
+                                        <TextBlock Text="📅" FontSize="16"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding DayName}" Foreground="#4A90E2" FontSize="22" FontWeight="Bold"/>
 
-                                <Rectangle Grid.Row="1" Height="1" Fill="#404040" Margin="0,10,0,15"/>
+                                    <TextBlock Text="{Binding Groups.Count, StringFormat=' ({0} Nhóm)'}" 
+                                               Foreground="#A0A0A5" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                </StackPanel>
+
+                                <Rectangle Grid.Row="1" Height="2" Fill="#32343E" Margin="0,15,0,20" RadiusX="1" RadiusY="1"/>
 
                                 <ItemsControl Grid.Row="2" ItemsSource="{Binding Groups}">
                                     <ItemsControl.ItemsPanel>
@@ -83,9 +111,20 @@
 
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border Background="#32343E" BorderBrush="#4A90E2" BorderThickness="1" 
-                                                    CornerRadius="8" Padding="15,10" Margin="0,0,10,10">
-                                                <TextBlock Text="{Binding}" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                                            <Border Background="#1E1E24" BorderBrush="#3B82F6" BorderThickness="1.5" 
+                                                    CornerRadius="8" Padding="20,12" Margin="0,0,15,15">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="#32343E"/>
+                                                                <Setter Property="BorderBrush" Value="#4A90E2"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+
+                                                <TextBlock Text="{Binding}" Foreground="White" FontSize="16" FontWeight="Bold"/>
                                             </Border>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>

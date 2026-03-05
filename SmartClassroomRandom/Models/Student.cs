@@ -17,5 +17,7 @@ namespace SmartClassroomRandom.Models
         // ta có thể dùng biến này để binding màu (ví dụ: điểm kém thì thẻ màu đỏ)
         [ObservableProperty]
         private bool _isWarning = false;
+        public int DiemCong { get; set; } = 0; // Để tìm người Best
+        [ObservableProperty] private string _cardColor = "#4A90E2"; // Màu nền của thẻ (đổi động)
     }
 }

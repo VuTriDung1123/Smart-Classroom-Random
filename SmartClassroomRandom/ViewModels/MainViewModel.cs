@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace SmartClassroomRandom.ViewModels
 {
@@ -20,12 +21,23 @@ namespace SmartClassroomRandom.ViewModels
         [ObservableProperty] private int _bannedCount = 0;
         [ObservableProperty] private string _currentFileName = "Chưa tải file";
         [ObservableProperty] private DataTable _excelData = new DataTable();
+        [ObservableProperty] private string _bestStudentName = "Chưa có";
+        [ObservableProperty] private string _bestStudentPoints = "0";
 
         // Biến này quyết định xem màn hình bên phải đang hiển thị trang nào
         [ObservableProperty] private object? _currentView;
 
         // Danh sách gốc (Tất cả sinh viên từ Excel)
         [ObservableProperty] private ObservableCollection<Student> _students = new();
+
+
+        // ================= BIẾN CHO PHẦN GIỌNG NÓI =================
+        // Dữ liệu cho 2 ComboBox
+        public List<string> AudienceList { get; } = new List<string> { "sinh viên", "học sinh" };
+        public List<string> ActionList { get; } = new List<string> { "trả bài", "trả lời", "kiểm tra bài tập về nhà" };
+
+        [ObservableProperty] private string _selectedAudience = "sinh viên";
+        [ObservableProperty] private string _selectedAction = "trả bài";
 
         // ================= 2. CÁC BIẾN CHO TỪNG TRANG =================
         // Trang Random 1 người
@@ -87,74 +99,104 @@ namespace SmartClassroomRandom.ViewModels
                 AttendCount = Students.Count;
                 CurrentFileName = System.IO.Path.GetFileName(openFileDialog.FileName);
 
+                // Thêm đoạn này vào gần cuối hàm SyncExcel(), ngay trên NavigateExcel();
+                var best = Students.OrderByDescending(s => s.DiemCong).FirstOrDefault();
+                if (best != null)
+                {
+                    BestStudentName = best.Name;
+                    BestStudentPoints = best.DiemCong.ToString();
+                }
+
+                NavigateExcel(); // Đã có sẵn
+
                 NavigateExcel();
             }
         }
 
-        // ================= 5. COMMAND: RANDOM 1 NGƯỜI (CÓ TRỌNG SỐ) =================
+        // ================= 5. COMMAND: RANDOM 1 NGƯỜI (CÓ TRỌNG SỐ & GIỌNG NÓI) =================
         [RelayCommand]
-        private void RandomOne()
+        private async Task RandomOneAsync()
         {
             if (Students.Count == 0) return;
+            SelectedSingleStudent = null;
 
-            // Thuật toán: Người phát biểu ít -> Tỷ lệ trúng cao
-            int maxPhatBieu = Students.Max(s => s.PhatBieu);
+            string intro = $"Chọn ngẫu nhiên 1 {SelectedAudience} {SelectedAction}";
+            await VoiceService.SpeakAsync(intro);
+
             var random = new Random();
+            Student? pickedStudent = null;
 
-            // Tính điểm trọng số cho từng người: Điểm càng cao, cơ hội trúng càng lớn
-            var weightedStudents = Students.Select(s => new
+            // NẾU LÀ "TRẢ LỜI" -> Ưu tiên người ít phát biểu
+            if (SelectedAction == "trả lời")
             {
-                Student = s,
-                // Cộng thêm 1 để người phát biểu nhiều nhất vẫn có 1 tỷ lệ nhỏ bị gọi
-                Weight = (maxPhatBieu - s.PhatBieu) + 1
-            }).ToList();
-
-            int totalWeight = weightedStudents.Sum(x => x.Weight);
-            int randomNumber = random.Next(0, totalWeight);
-
-            int currentSum = 0;
-            foreach (var item in weightedStudents)
-            {
-                currentSum += item.Weight;
-                if (randomNumber < currentSum)
+                int maxPhatBieu = Students.Max(s => s.PhatBieu);
+                var weightedStudents = Students.Select(s => new { Student = s, Weight = (maxPhatBieu - s.PhatBieu) + 1 }).ToList();
+                int totalWeight = weightedStudents.Sum(x => x.Weight);
+                int randomNumber = random.Next(0, totalWeight);
+                int currentSum = 0;
+                foreach (var item in weightedStudents)
                 {
-                    SelectedSingleStudent = item.Student;
-                    break;
+                    currentSum += item.Weight;
+                    if (randomNumber < currentSum) { pickedStudent = item.Student; break; }
                 }
             }
+            // NẾU LÀ KHÁC (Kiểm tra bài, Trả bài) -> Random đều, tỉ lệ bằng nhau
+            else
+            {
+                pickedStudent = Students[random.Next(Students.Count)];
+            }
+
+            SelectedSingleStudent = pickedStudent;
+            if (pickedStudent != null) await VoiceService.SpeakAsync(pickedStudent.Name);
         }
 
-        // ================= 6. COMMAND: RANDOM N NGƯỜI =================
+        // ================= 6. COMMAND: RANDOM N NGƯỜI (ĐỌC GIỌNG NÓI) =================
         [RelayCommand]
-        private void GenerateMultiple()
+        private async Task GenerateMultipleAsync()
         {
             if (Students.Count == 0 || GenerateCount <= 0) return;
+            SelectedStudents.Clear();
 
-            int takeCount = Math.Min(GenerateCount, Students.Count); // Đảm bảo không lấy lố sĩ số
+            string intro = $"Chọn ngẫu nhiên {GenerateCount} {SelectedAudience} {SelectedAction}";
+            await VoiceService.SpeakAsync(intro);
+
+            int takeCount = Math.Min(GenerateCount, Students.Count);
             var random = new Random();
-
-            // Trộn danh sách (Shuffle) và lấy N người đầu tiên
             var randomizedList = Students.OrderBy(x => random.Next()).Take(takeCount).ToList();
 
-            SelectedStudents.Clear();
+            // Tính trung bình phát biểu của cả lớp
+            double avgPhatBieu = Students.Count > 0 ? Students.Average(s => s.PhatBieu) : 0;
+
             foreach (var st in randomizedList)
             {
+                // Xét màu theo tiêu chí
+                if (st.PhatBieu == 0 || st.PhatBieu < avgPhatBieu * 0.5) st.CardColor = "#E24A4A"; // Màu Đỏ (Ít/Không)
+                else if (st.PhatBieu > avgPhatBieu * 1.2) st.CardColor = "#4CAF50"; // Xanh Lá (Nhiều)
+                else st.CardColor = "#4A90E2"; // Xanh Dương (Trung bình)
+
                 SelectedStudents.Add(st);
+                await VoiceService.SpeakAsync(st.Name);
             }
         }
 
-        // ================= 7. COMMAND: XẾP LỊCH BÁO CÁO NHÓM =================
+        // ================= 7. COMMAND: XẾP LỊCH BÁO CÁO NHÓM (CÓ ĐỌC GIỌNG NÓI) =================
         [RelayCommand]
-        private void GenerateSchedule()
+        private async Task GenerateScheduleAsync()
         {
             if (TotalGroups <= 0 || TotalDays <= 0) return;
+
+            // Xóa danh sách cũ trên màn hình
+            ScheduleDays.Clear();
+
+            // 1. Chị Google đọc câu mở đầu
+            string intro = $"Bắt đầu xếp lịch báo cáo cho {TotalGroups} nhóm, trong {TotalDays} ngày.";
+            await VoiceService.SpeakAsync(intro);
 
             var random = new Random();
 
             // Tạo danh sách các nhóm (1, 2, 3...) và xáo trộn ngẫu nhiên
             var allGroups = Enumerable.Range(1, TotalGroups).OrderBy(x => random.Next()).ToList();
 
-            ScheduleDays.Clear();
             int currentGroupIndex = 0;
             int groupsPerDay = (int)Math.Ceiling((double)TotalGroups / TotalDays);
 
@@ -171,9 +213,21 @@ namespace SmartClassroomRandom.ViewModels
 
                 if (day.Groups.Count > 0)
                 {
+                    // Đưa ngày này lên giao diện (giao diện sẽ tự động chạy animation rớt thẻ xuống)
                     ScheduleDays.Add(day);
+
+                    // Tạo câu văn cho chị Google đọc ngày hôm đó
+                    // Ví dụ: "Ngày 1 gồm: Nhóm 5, Nhóm 9, Nhóm 2"
+                    string groupNames = string.Join(", ", day.Groups);
+                    string textToRead = $"{day.DayName} gồm: {groupNames}";
+
+                    // Đợi chị Google đọc xong danh sách nhóm của ngày này rồi mới tạo ngày tiếp theo
+                    await VoiceService.SpeakAsync(textToRead);
                 }
             }
+
+            // Đọc câu chốt khi xong việc
+            await VoiceService.SpeakAsync("Đã xếp lịch xong. Chúc các nhóm chuẩn bị bài tốt!");
         }
     }
 }

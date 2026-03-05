@@ -77,31 +77,20 @@ namespace SmartClassroomRandom.Services
                                 dtRow[i] = cellValue;
 
                                 // -- Thuật toán map Model thông minh --
-                                if (colName == "họ")
+                                if (colName == "họ") { ho = cellValue; }
+                                else if (colName == "tên") { ten = cellValue; }
+                                else if (colName == "họ tên" || colName == "họ và tên" || colName == "name") { student.Name = cellValue; }
+                                else if (colName.Contains("điểm cộng")) // Tách riêng điểm cộng
                                 {
-                                    ho = cellValue;
+                                    if (int.TryParse(cellValue, out int dc)) student.DiemCong = dc;
                                 }
-                                else if (colName == "tên")
+                                else if (colName.Contains("phát biểu") || colName.Contains("số lần")) // Tách riêng phát biểu
                                 {
-                                    ten = cellValue;
-                                }
-                                else if (colName == "họ tên" || colName == "họ và tên" || colName == "name")
-                                {
-                                    student.Name = cellValue;
-                                }
-                                else if (colName.Contains("phát biểu") || colName.Contains("điểm cộng"))
-                                {
-                                    if (int.TryParse(cellValue, out int pb))
-                                    {
-                                        student.PhatBieu += pb; // Cộng dồn nếu có nhiều cột (vd: vừa có Điểm cộng, vừa có Phát biểu)
-                                    }
+                                    if (int.TryParse(cellValue, out int pb)) student.PhatBieu = pb;
                                 }
                                 else if (colName.Contains("vắng") || colName.Contains("không đi học"))
                                 {
-                                    if (int.TryParse(cellValue, out int vang))
-                                    {
-                                        student.KhongDiHoc = vang;
-                                    }
+                                    if (int.TryParse(cellValue, out int vang)) student.KhongDiHoc = vang;
                                 }
                             }
 
