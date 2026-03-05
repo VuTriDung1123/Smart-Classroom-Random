@@ -53,43 +53,46 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Width="170" Height="220" Margin="0,0,15,15" CornerRadius="12" Padding="15">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#4A90E2" Offset="0"/>
-                                    <GradientStop Color="#2A5298" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Border.Background>
+                        <Border Width="170" Height="220" Margin="0,0,15,15" CornerRadius="12" Padding="15"
+                                Background="{Binding CardColor}">
+
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                From="-50,0,15,15" To="0,0,15,15"
+                                                                Duration="0:0:0.4">
+                                                <ThicknessAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </ThicknessAnimation.EasingFunction>
+                                            </ThicknessAnimation>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                             From="0" To="1" Duration="0:0:0.4"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
 
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0" Text="{Binding Name}" TextWrapping="Wrap" 
-                                           FontSize="22" FontWeight="Bold" Foreground="White"
-                                           HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
-
+                                <TextBlock Grid.Row="0" Text="{Binding Name}" TextWrapping="Wrap" FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center"/>
                                 <StackPanel Grid.Row="1">
                                     <Rectangle Height="1" Fill="#FFFFFF" Opacity="0.2" Margin="0,0,0,8"/>
-
                                     <Grid Margin="0,2">
-                                        <TextBlock Text="Phát biểu:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="Phát biểu:" Foreground="#E0E0E0" FontSize="11" HorizontalAlignment="Left"/>
                                         <TextBlock Text="{Binding PhatBieu}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"/>
                                     </Grid>
                                     <Grid Margin="0,2">
-                                        <TextBlock Text="Không trả lời:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
-                                        <TextBlock Text="{Binding KhongTraLoiDuoc}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"/>
+                                        <TextBlock Text="Điểm cộng:" Foreground="#E0E0E0" FontSize="11" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="{Binding DiemCong}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"/>
                                     </Grid>
                                     <Grid Margin="0,2">
-                                        <TextBlock Text="Không đi học:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
+                                        <TextBlock Text="Vắng:" Foreground="#E0E0E0" FontSize="11" HorizontalAlignment="Left"/>
                                         <TextBlock Text="{Binding KhongDiHoc}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"/>
-                                    </Grid>
-                                    <Grid Margin="0,2">
-                                        <TextBlock Text="Ghi chú:" Foreground="#D0D0D0" FontSize="11" HorizontalAlignment="Left"/>
-                                        <TextBlock Text="{Binding GhiChu}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Right"
-                                                   TextTrimming="CharacterEllipsis" MaxWidth="70"/>
                                     </Grid>
                                 </StackPanel>
                             </Grid>

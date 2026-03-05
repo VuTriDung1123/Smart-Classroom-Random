@@ -21,6 +21,8 @@ namespace SmartClassroomRandom.ViewModels
         [ObservableProperty] private int _bannedCount = 0;
         [ObservableProperty] private string _currentFileName = "Chưa tải file";
         [ObservableProperty] private DataTable _excelData = new DataTable();
+        [ObservableProperty] private string _bestStudentName = "Chưa có";
+        [ObservableProperty] private string _bestStudentPoints = "0";
 
         // Biến này quyết định xem màn hình bên phải đang hiển thị trang nào
         [ObservableProperty] private object? _currentView;
@@ -97,6 +99,16 @@ namespace SmartClassroomRandom.ViewModels
                 AttendCount = Students.Count;
                 CurrentFileName = System.IO.Path.GetFileName(openFileDialog.FileName);
 
+                // Thêm đoạn này vào gần cuối hàm SyncExcel(), ngay trên NavigateExcel();
+                var best = Students.OrderByDescending(s => s.DiemCong).FirstOrDefault();
+                if (best != null)
+                {
+                    BestStudentName = best.Name;
+                    BestStudentPoints = best.DiemCong.ToString();
+                }
+
+                NavigateExcel(); // Đã có sẵn
+
                 NavigateExcel();
             }
         }
@@ -106,49 +118,36 @@ namespace SmartClassroomRandom.ViewModels
         private async Task RandomOneAsync()
         {
             if (Students.Count == 0) return;
-
-            // Xóa thẻ cũ (nếu có) trên màn hình để tạo cảm giác "đang bốc lại"
             SelectedSingleStudent = null;
 
-            // 1. Chị Google đọc câu dạo đầu
             string intro = $"Chọn ngẫu nhiên 1 {SelectedAudience} {SelectedAction}";
             await VoiceService.SpeakAsync(intro);
 
-            // 2. Thuật toán Random
-            int maxPhatBieu = Students.Max(s => s.PhatBieu);
             var random = new Random();
-
-            // Tính điểm trọng số cho từng người: Điểm càng cao, cơ hội trúng càng lớn
-            var weightedStudents = Students.Select(s => new
-            {
-                Student = s,
-                // Cộng thêm 1 để người phát biểu nhiều nhất vẫn có 1 tỷ lệ nhỏ bị gọi
-                Weight = (maxPhatBieu - s.PhatBieu) + 1
-            }).ToList();
-
-            int totalWeight = weightedStudents.Sum(x => x.Weight);
-            int randomNumber = random.Next(0, totalWeight);
-
             Student? pickedStudent = null;
-            int currentSum = 0;
-            foreach (var item in weightedStudents)
+
+            // NẾU LÀ "TRẢ LỜI" -> Ưu tiên người ít phát biểu
+            if (SelectedAction == "trả lời")
             {
-                currentSum += item.Weight;
-                if (randomNumber < currentSum)
+                int maxPhatBieu = Students.Max(s => s.PhatBieu);
+                var weightedStudents = Students.Select(s => new { Student = s, Weight = (maxPhatBieu - s.PhatBieu) + 1 }).ToList();
+                int totalWeight = weightedStudents.Sum(x => x.Weight);
+                int randomNumber = random.Next(0, totalWeight);
+                int currentSum = 0;
+                foreach (var item in weightedStudents)
                 {
-                    pickedStudent = item.Student;
-                    break;
+                    currentSum += item.Weight;
+                    if (randomNumber < currentSum) { pickedStudent = item.Student; break; }
                 }
             }
-
-            // 3. Hiện thẻ sinh viên lên màn hình
-            SelectedSingleStudent = pickedStudent;
-
-            // 4. Đọc tên người trúng (sau khi thẻ đã hiện)
-            if (pickedStudent != null)
+            // NẾU LÀ KHÁC (Kiểm tra bài, Trả bài) -> Random đều, tỉ lệ bằng nhau
+            else
             {
-                await VoiceService.SpeakAsync(pickedStudent.Name);
+                pickedStudent = Students[random.Next(Students.Count)];
             }
+
+            SelectedSingleStudent = pickedStudent;
+            if (pickedStudent != null) await VoiceService.SpeakAsync(pickedStudent.Name);
         }
 
         // ================= 6. COMMAND: RANDOM N NGƯỜI (ĐỌC GIỌNG NÓI) =================
@@ -156,26 +155,26 @@ namespace SmartClassroomRandom.ViewModels
         private async Task GenerateMultipleAsync()
         {
             if (Students.Count == 0 || GenerateCount <= 0) return;
-
-            // Dọn sạch danh sách cũ trên màn hình
             SelectedStudents.Clear();
 
-            // 1. Chị Google đọc câu dạo đầu
             string intro = $"Chọn ngẫu nhiên {GenerateCount} {SelectedAudience} {SelectedAction}";
             await VoiceService.SpeakAsync(intro);
 
-            int takeCount = Math.Min(GenerateCount, Students.Count); // Đảm bảo không lấy lố sĩ số
+            int takeCount = Math.Min(GenerateCount, Students.Count);
             var random = new Random();
-
-            // Trộn danh sách (Shuffle) và lấy N người đầu tiên
             var randomizedList = Students.OrderBy(x => random.Next()).Take(takeCount).ToList();
 
-            // 2. Hiển thị từng người và đọc tên
+            // Tính trung bình phát biểu của cả lớp
+            double avgPhatBieu = Students.Count > 0 ? Students.Average(s => s.PhatBieu) : 0;
+
             foreach (var st in randomizedList)
             {
-                SelectedStudents.Add(st); // XAML sẽ tự động vẽ thêm 1 thẻ lên màn hình
+                // Xét màu theo tiêu chí
+                if (st.PhatBieu == 0 || st.PhatBieu < avgPhatBieu * 0.5) st.CardColor = "#E24A4A"; // Màu Đỏ (Ít/Không)
+                else if (st.PhatBieu > avgPhatBieu * 1.2) st.CardColor = "#4CAF50"; // Xanh Lá (Nhiều)
+                else st.CardColor = "#4A90E2"; // Xanh Dương (Trung bình)
 
-                // Đợi chị Google đọc xong tên người này rồi mới chạy vòng lặp nhả người tiếp theo
+                SelectedStudents.Add(st);
                 await VoiceService.SpeakAsync(st.Name);
             }
         }
