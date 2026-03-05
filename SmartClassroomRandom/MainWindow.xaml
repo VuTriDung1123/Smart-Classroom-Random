@@ -76,17 +76,31 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" Background="#2B2D35" CornerRadius="10" Padding="15,10">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="👥 Total " Foreground="#A0A0A5" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding TotalStudents}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="👥 Total " Foreground="#A0A0A5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalStudents}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0" VerticalAlignment="Center"/>
 
-                        <TextBlock Text="✅ Attend " Foreground="#A0A0A5" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding AttendCount, FallbackValue='0'}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
+                        <Rectangle Width="1" Height="20" Fill="#404040" Margin="0,0,15,0"/>
 
-                        <TextBlock Text="🚫 Banned " Foreground="#A0A0A5" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding BannedCount, FallbackValue='0'}" Foreground="White" FontWeight="Bold" Margin="0,0,15,0"/>
+                        <TextBlock Text="🗣️ Gọi:" Foreground="#A0A0A5" FontWeight="SemiBold" Margin="0,0,5,0" VerticalAlignment="Center"/>
 
-                        <TextBlock Text="🔍 Search" Foreground="#A0A0A5" FontWeight="SemiBold" Cursor="Hand"/>
+                        <ComboBox ItemsSource="{Binding AudienceList}" SelectedItem="{Binding SelectedAudience}" 
+                                  Width="90" Margin="0,0,10,0" Foreground="Black" BorderThickness="0">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
+
+                        <ComboBox ItemsSource="{Binding ActionList}" SelectedItem="{Binding SelectedAction}" 
+                                  Width="180" Foreground="Black" BorderThickness="0">
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black"/>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                     </StackPanel>
                 </Border>
 

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace SmartClassroomRandom.ViewModels
 {
@@ -26,6 +27,15 @@ namespace SmartClassroomRandom.ViewModels
 
         // Danh sách gốc (Tất cả sinh viên từ Excel)
         [ObservableProperty] private ObservableCollection<Student> _students = new();
+
+
+        // ================= BIẾN CHO PHẦN GIỌNG NÓI =================
+        // Dữ liệu cho 2 ComboBox
+        public List<string> AudienceList { get; } = new List<string> { "sinh viên", "học sinh" };
+        public List<string> ActionList { get; } = new List<string> { "trả bài", "trả lời", "kiểm tra bài tập về nhà" };
+
+        [ObservableProperty] private string _selectedAudience = "sinh viên";
+        [ObservableProperty] private string _selectedAction = "trả bài";
 
         // ================= 2. CÁC BIẾN CHO TỪNG TRANG =================
         // Trang Random 1 người
@@ -91,13 +101,20 @@ namespace SmartClassroomRandom.ViewModels
             }
         }
 
-        // ================= 5. COMMAND: RANDOM 1 NGƯỜI (CÓ TRỌNG SỐ) =================
+        // ================= 5. COMMAND: RANDOM 1 NGƯỜI (CÓ TRỌNG SỐ & GIỌNG NÓI) =================
         [RelayCommand]
-        private void RandomOne()
+        private async Task RandomOneAsync()
         {
             if (Students.Count == 0) return;
 
-            // Thuật toán: Người phát biểu ít -> Tỷ lệ trúng cao
+            // Xóa thẻ cũ (nếu có) trên màn hình để tạo cảm giác "đang bốc lại"
+            SelectedSingleStudent = null;
+
+            // 1. Chị Google đọc câu dạo đầu
+            string intro = $"Chọn ngẫu nhiên 1 {SelectedAudience} {SelectedAction}";
+            await VoiceService.SpeakAsync(intro);
+
+            // 2. Thuật toán Random
             int maxPhatBieu = Students.Max(s => s.PhatBieu);
             var random = new Random();
 
@@ -112,23 +129,40 @@ namespace SmartClassroomRandom.ViewModels
             int totalWeight = weightedStudents.Sum(x => x.Weight);
             int randomNumber = random.Next(0, totalWeight);
 
+            Student? pickedStudent = null;
             int currentSum = 0;
             foreach (var item in weightedStudents)
             {
                 currentSum += item.Weight;
                 if (randomNumber < currentSum)
                 {
-                    SelectedSingleStudent = item.Student;
+                    pickedStudent = item.Student;
                     break;
                 }
             }
+
+            // 3. Hiện thẻ sinh viên lên màn hình
+            SelectedSingleStudent = pickedStudent;
+
+            // 4. Đọc tên người trúng (sau khi thẻ đã hiện)
+            if (pickedStudent != null)
+            {
+                await VoiceService.SpeakAsync(pickedStudent.Name);
+            }
         }
 
-        // ================= 6. COMMAND: RANDOM N NGƯỜI =================
+        // ================= 6. COMMAND: RANDOM N NGƯỜI (ĐỌC GIỌNG NÓI) =================
         [RelayCommand]
-        private void GenerateMultiple()
+        private async Task GenerateMultipleAsync()
         {
             if (Students.Count == 0 || GenerateCount <= 0) return;
+
+            // Dọn sạch danh sách cũ trên màn hình
+            SelectedStudents.Clear();
+
+            // 1. Chị Google đọc câu dạo đầu
+            string intro = $"Chọn ngẫu nhiên {GenerateCount} {SelectedAudience} {SelectedAction}";
+            await VoiceService.SpeakAsync(intro);
 
             int takeCount = Math.Min(GenerateCount, Students.Count); // Đảm bảo không lấy lố sĩ số
             var random = new Random();
@@ -136,10 +170,13 @@ namespace SmartClassroomRandom.ViewModels
             // Trộn danh sách (Shuffle) và lấy N người đầu tiên
             var randomizedList = Students.OrderBy(x => random.Next()).Take(takeCount).ToList();
 
-            SelectedStudents.Clear();
+            // 2. Hiển thị từng người và đọc tên
             foreach (var st in randomizedList)
             {
-                SelectedStudents.Add(st);
+                SelectedStudents.Add(st); // XAML sẽ tự động vẽ thêm 1 thẻ lên màn hình
+
+                // Đợi chị Google đọc xong tên người này rồi mới chạy vòng lặp nhả người tiếp theo
+                await VoiceService.SpeakAsync(st.Name);
             }
         }
 
