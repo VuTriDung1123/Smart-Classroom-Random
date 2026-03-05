@@ -21,8 +21,8 @@
         </Border>
 
         <Border Grid.Row="1" Background="#2B2D35" CornerRadius="12" Padding="15">
-            <DataGrid ItemsSource="{Binding Students}" 
-                      AutoGenerateColumns="False" 
+            <DataGrid ItemsSource="{Binding ExcelData.DefaultView}" 
+                      AutoGenerateColumns="True" 
                       CanUserAddRows="False" 
                       IsReadOnly="True"
                       Background="Transparent" 
@@ -63,21 +63,10 @@
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="#3B82F6"/>
                                 <Setter Property="Foreground" Value="White"/>
-                                <Setter Property="BorderThickness" Value="0"/>
                             </Trigger>
                         </Style.Triggers>
                     </Style>
                 </DataGrid.CellStyle>
-
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="STT / ID" Binding="{Binding Id}" Width="80"/>
-                    <DataGridTextColumn Header="Tên Sinh Viên" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Phát biểu" Binding="{Binding PhatBieu}" Width="100"/>
-                    <DataGridTextColumn Header="Không trả lời" Binding="{Binding KhongTraLoiDuoc}" Width="120"/>
-                    <DataGridTextColumn Header="Vắng mặt" Binding="{Binding KhongDiHoc}" Width="100"/>
-                    <DataGridTextColumn Header="Ghi chú" Binding="{Binding GhiChu}" Width="150"/>
-                </DataGrid.Columns>
-
             </DataGrid>
         </Border>
     </Grid>
