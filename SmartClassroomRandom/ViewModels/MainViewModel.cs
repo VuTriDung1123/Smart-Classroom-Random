@@ -24,6 +24,14 @@ namespace SmartClassroomRandom.ViewModels
         [ObservableProperty] private string _bestStudentName = "Chưa có";
         [ObservableProperty] private string _bestStudentPoints = "0";
 
+        // ================= CÁC BIẾN CHO TRANG CẮT DÂY BOM =================
+        [ObservableProperty] private ObservableCollection<BombWire> _bombWires = new();
+        [ObservableProperty] private bool _isBombExploded = false;
+        [ObservableProperty] private Student? _explodedStudent = null; // Lưu người bị nổ bom
+
+        private readonly BombDefuseView _bombDefuseView = new(); // Khai báo trang UI
+        [RelayCommand] private void NavigateBomb() => CurrentView = _bombDefuseView; // Nút chuyển trang
+
         // Biến này quyết định xem màn hình bên phải đang hiển thị trang nào
         [ObservableProperty] private object? _currentView;
 
@@ -281,6 +289,58 @@ namespace SmartClassroomRandom.ViewModels
             }
 
             await VoiceService.SpeakAsync("Đã xếp lịch xong. Chúc các nhóm chuẩn bị tốt!");
+        }
+
+        // ================= LỆNH: CHUẨN BỊ BOM (5 DÂY KHÔNG TÊN) =================
+        [RelayCommand]
+        private async Task SetupBombAsync()
+        {
+            IsBombExploded = false;
+            BombWires.Clear();
+
+            var random = new Random();
+            string[] colors = { "#FF4136", "#0074D9", "#2ECC40", "#FFDC00", "#B10DC9" }; // Đỏ, Xanh, Lục, Vàng, Tím
+            string[] names = { "Dây Đỏ", "Dây Xanh", "Dây Lục", "Dây Vàng", "Dây Tím" };
+
+            // Chọn ngầm 1 sợi làm dây kích nổ
+            int bombIndex = random.Next(0, 5);
+
+            for (int i = 0; i < 5; i++)
+            {
+                BombWires.Add(new BombWire
+                {
+                    WireColor = colors[i],
+                    WireName = names[i],
+                    IsBomb = (i == bombIndex) // Gài bom vào đây
+                });
+            }
+
+            await VoiceService.SpeakAsync("Đã cài bom xong. Mời 5 bạn vừa được bốc lên chọn màu dây!");
+        }
+
+        // ================= LỆNH: CẮT DÂY (KÈM ÂM THANH) =================
+        [RelayCommand]
+        private async Task CutWireAsync(BombWire wire)
+        {
+            if (wire.IsCut || IsBombExploded) return;
+            wire.IsCut = true;
+
+            if (wire.IsBomb)
+            {
+                IsBombExploded = true;
+
+                // Link tiếng nổ siêu to khổng lồ
+                string boomSound = "https://assets.mixkit.co/active_storage/sfx/1701/1701-preview.mp3";
+                await VoiceService.PlayEffectAndSpeakAsync(boomSound, "Rất tiếc, lên bảng trả bài ngay!");
+            }
+            else
+            {
+                wire.IsSafe = true;
+
+                // Link tiếng đám đông reo hò, huýt sáo vang dội
+                string yaySound = "https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3";
+                await VoiceService.PlayEffectAndSpeakAsync(yaySound, "Chúc mừng, bạn đã an toàn.");
+            }
         }
     }
 }
