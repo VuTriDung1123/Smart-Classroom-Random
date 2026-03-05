@@ -43,6 +43,13 @@ namespace SmartClassroomRandom.ViewModels
         // Trang Random 1 người
         [ObservableProperty] private Student? _selectedSingleStudent;
 
+        // CÁC BIẾN CHO GACHA NHÂN PHẨM
+        [ObservableProperty] private string _gachaTitle = string.Empty;
+        [ObservableProperty] private string _gachaDescription = string.Empty;
+        [ObservableProperty] private string _gachaColor = "Transparent";
+        [ObservableProperty] private string _gachaRarity = string.Empty;
+        [ObservableProperty] private bool _isGachaRevealed = false;
+
         // Trang Random N người
         [ObservableProperty] private int _generateCount = 10;
         [ObservableProperty] private ObservableCollection<Student> _selectedStudents = new();
@@ -119,6 +126,7 @@ namespace SmartClassroomRandom.ViewModels
         {
             if (Students.Count == 0) return;
             SelectedSingleStudent = null;
+            IsGachaRevealed = false;
 
             string intro = $"Chọn ngẫu nhiên 1 {SelectedAudience} {SelectedAction}";
             await VoiceService.SpeakAsync(intro);
@@ -177,6 +185,54 @@ namespace SmartClassroomRandom.ViewModels
                 SelectedStudents.Add(st);
                 await VoiceService.SpeakAsync(st.Name);
             }
+        }
+
+        // ================= LỆNH MỚI: RÚT THẺ GACHA =================
+        [RelayCommand]
+        private async Task RollGachaAsync()
+        {
+            // Bắt buộc phải bốc trúng sinh viên rồi mới cho rút thẻ
+            if (SelectedSingleStudent == null) return;
+
+            IsGachaRevealed = false; // Reset hiệu ứng
+            await Task.Delay(100);   // Chờ 0.1s để UI kịp reset
+
+            var rnd = new Random();
+            int roll = rnd.Next(1, 101); // Quay số từ 1 đến 100
+
+            if (roll <= 5) // 5% SSR
+            {
+                GachaRarity = "SSR";
+                GachaTitle = "KIM BÀI MIỄN TỬ";
+                GachaDescription = "Miễn trả bài hôm nay! Hệ thống tự động vinh danh và cộng 3 điểm.";
+                GachaColor = "#FFD700"; // Vàng ánh kim (Gold)
+            }
+            else if (roll <= 20) // 15% SR (Từ 6 đến 20) 
+            {
+                GachaRarity = "SR";
+                GachaTitle = "TRIỆU HỒI HỘ GIÁ";
+                GachaDescription = "Chỉ định 1 đồng đội trả lời hộ. Đúng cùng hưởng 1 điểm cộng, sai cùng chịu 1 điểm trừ!";
+                GachaColor = "#B465DA"; // Tím rực rỡ
+            }
+            else if (roll <= 50) // 30% R (Từ 21 đến 50)
+            {
+                GachaRarity = "R";
+                GachaTitle = "NHÂN ĐÔI SÁT THƯƠNG";
+                GachaDescription = "Trả lời đúng được x2 điểm cộng. Trả lời sai bị 2 điểm trừ!";
+                GachaColor = "#4A90E2"; // Xanh dương
+            }
+            else // 50% N (Từ 51 đến 100)
+            {
+                GachaRarity = "N";
+                GachaTitle = "LỜI NGUYỀN CÂM LẶNG";
+                GachaDescription = "Áp lực thời gian: Chỉ có đúng 15 giây để suy nghĩ và trả lời! Hết giờ là trừ 1 điểm.";
+                GachaColor = "#607D8B"; // Xám đen
+            }
+
+            IsGachaRevealed = true; // Hiện thẻ lên
+
+            // Chị Google đọc kết quả
+            await VoiceService.SpeakAsync($"Thẻ hiệu ứng: {GachaTitle}. {GachaDescription}");
         }
 
         // ================= 7. COMMAND: XẾP LỊCH BÁO CÁO NHÓM (CÓ ĐỌC GIỌNG NÓI) =================
