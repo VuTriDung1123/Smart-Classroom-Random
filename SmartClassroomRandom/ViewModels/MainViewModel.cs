@@ -101,7 +101,9 @@ namespace SmartClassroomRandom.ViewModels
         private readonly RandomOneView _randomOneView = new();
         private readonly RandomMultipleView _randomMultipleView = new();
         private readonly GroupScheduleView _groupScheduleView = new();
-        private readonly SettingsView _settingsView = new(); // Trang cài đặt
+        private readonly SettingsView _settingsView = new();
+        private readonly GuideView _guideView = new();
+
 
         public MainViewModel()
         {
@@ -114,7 +116,8 @@ namespace SmartClassroomRandom.ViewModels
         [RelayCommand] private void NavigateRandomOne() => CurrentView = _randomOneView;
         [RelayCommand] private void NavigateRandomN() => CurrentView = _randomMultipleView;
         [RelayCommand] private void NavigateGroup() => CurrentView = _groupScheduleView;
-        [RelayCommand] private void NavigateSettings() => CurrentView = _settingsView; // Nút chuyển trang Settings
+        [RelayCommand] private void NavigateSettings() => CurrentView = _settingsView;
+        [RelayCommand] private void NavigateGuide() => CurrentView = _guideView;
 
         // ================= 4. COMMAND: TẢI FILE EXCEL =================
         [RelayCommand]
