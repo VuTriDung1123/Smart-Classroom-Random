@@ -60,7 +60,6 @@ namespace SmartClassroomRandom.Services
         {
             try
             {
-                // Đóng giả làm trình duyệt Chrome để không bị trang web chặn
                 var request = new HttpRequestMessage(HttpMethod.Get, effectUrl);
                 request.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
 
@@ -83,13 +82,13 @@ namespace SmartClassroomRandom.Services
                     player.Open(new Uri(tempFile, UriKind.Absolute));
                     player.Play();
 
-                    // Chờ phát xong âm thanh hiệu ứng (Tối đa 3 giây)
-                    await Task.WhenAny(tcs.Task, Task.Delay(3000));
+                    // SỬA Ở ĐÂY: Chỉ đợi 0.5 giây cho tiếng hiệu ứng nổ/vỗ tay vang lên rồi gọi chị Google đọc luôn!
+                    await Task.Delay(500);
                 }
             }
             catch { }
 
-            // Sau đó mới gọi chị Google đọc kết quả
+            // Chị Google đọc kết quả
             await SpeakAsync(textToSpeak);
         }
     }
