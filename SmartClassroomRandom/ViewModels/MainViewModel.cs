@@ -23,6 +23,26 @@ namespace SmartClassroomRandom.ViewModels
         [ObservableProperty] private DataTable _excelData = new DataTable();
         [ObservableProperty] private string _bestStudentName = "Chưa có";
         [ObservableProperty] private string _bestStudentPoints = "0";
+        // ================= CÁC BIẾN CÀI ĐẶT (MA TRẬN LẬT THẺ) =================
+        [ObservableProperty] private int _matrixRows = 3; // Mặc định 3 hàng
+        [ObservableProperty] private int _matrixCols = 4; // Mặc định 4 cột
+        [ObservableProperty] private int _matrixCountNormal = 8;
+        [ObservableProperty] private int _matrixCountSafe = 2;
+        [ObservableProperty] private int _matrixCountBonus = 1;
+        [ObservableProperty] private int _matrixCountBomb = 1;
+        [ObservableProperty] private string _matrixDescNormal = "Lên trả bài / Trả lời trắc nghiệm";
+        [ObservableProperty] private string _matrixDescSafe = "Thoát nạn, không bị gọi";
+        [ObservableProperty] private string _matrixDescBonus = "Về chỗ, được cộng điểm may mắn";
+        [ObservableProperty] private string _matrixDescBomb = "Lên bảng ngay lập tức (Trừ điểm)";
+
+        // ================= CÁC BIẾN TRANG MA TRẬN =================
+        [ObservableProperty] private ObservableCollection<MatrixCard> _matrixCards = new();
+        [ObservableProperty] private bool _isMatrixGameOver = false;
+
+        private readonly MatrixGameView _matrixGameView = new();
+        [RelayCommand] private void NavigateMatrix() => CurrentView = _matrixGameView;
+
+
 
         // ================= CÁC BIẾN CHO TRANG CẮT DÂY BOM =================
         [ObservableProperty] private ObservableCollection<BombWire> _bombWires = new();
@@ -340,6 +360,72 @@ namespace SmartClassroomRandom.ViewModels
                 // Link tiếng đám đông reo hò, huýt sáo vang dội
                 string yaySound = "https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3";
                 await VoiceService.PlayEffectAndSpeakAsync(yaySound, "Chúc mừng, bạn đã an toàn.");
+            }
+        }
+
+        // ================= LỆNH: TẠO MA TRẬN =================
+        [RelayCommand]
+        private async Task SetupMatrixAsync()
+        {
+            int totalCells = MatrixRows * MatrixCols;
+            int totalConfig = MatrixCountNormal + MatrixCountSafe + MatrixCountBonus + MatrixCountBomb;
+
+            // KIỂM TRA LOGIC CÀI ĐẶT (Báo lỗi nếu tính nhầm)
+            if (totalCells != totalConfig)
+            {
+                System.Windows.MessageBox.Show($"Cài đặt sai! Kích thước bảng là {MatrixRows}x{MatrixCols} = {totalCells} thẻ.\nNhưng tổng số lượng thẻ bạn cấu hình là {totalConfig}.\nVui lòng vào tab Cài đặt chỉnh lại!", "Sai số lượng", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            IsMatrixGameOver = false;
+            MatrixCards.Clear();
+
+            List<MatrixCard> tempDeck = new List<MatrixCard>();
+
+            // Bỏ thẻ vào bộ bài theo đúng số lượng Cài đặt
+            for (int i = 0; i < MatrixCountNormal; i++) tempDeck.Add(new MatrixCard { CardType = "Normal", CardTitle = "CÂU HỎI", CardIcon = "❓", CardColor = "#4A90E2", TtsMessage = "Câu hỏi trắc nghiệm. Xin mời trả lời." });
+            for (int i = 0; i < MatrixCountSafe; i++) tempDeck.Add(new MatrixCard { CardType = "Safe", CardTitle = "AN TOÀN", CardIcon = "🛡️", CardColor = "#2ECC40", TtsMessage = "Thoát nạn! Chúc mừng bạn đã an toàn." });
+            for (int i = 0; i < MatrixCountBonus; i++) tempDeck.Add(new MatrixCard { CardType = "Bonus", CardTitle = "+1 ĐIỂM", CardIcon = "⭐", CardColor = "#FFD700", TtsMessage = "Thẻ may mắn. Cộng ngay 1 điểm." });
+            for (int i = 0; i < MatrixCountBomb; i++) tempDeck.Add(new MatrixCard { CardType = "Bomb", CardTitle = "BOM!", CardIcon = "💣", CardColor = "#FF4136", TtsMessage = "Bùm! Rất tiếc, trò chơi kết thúc. Lên bảng!" });
+
+            // Trộn bài (Shuffle)
+            var random = new Random();
+            tempDeck = tempDeck.OrderBy(x => random.Next()).ToList();
+
+            // Gắn số thứ tự 1, 2, 3... và đưa ra màn hình
+            for (int i = 0; i < tempDeck.Count; i++)
+            {
+                tempDeck[i].CardNumber = i + 1;
+                MatrixCards.Add(tempDeck[i]);
+            }
+
+            await VoiceService.SpeakAsync($"Đã tạo xong ma trận lật thẻ. Xin mời bạn đọc số muốn chọn!");
+        }
+
+        // ================= LỆNH: LẬT THẺ (FIRE & FORGET ĐỂ KHÔNG ĐƠ UI) =================
+        [RelayCommand]
+        private void FlipMatrixCard(MatrixCard card)
+        {
+            if (card.IsFlipped || IsMatrixGameOver) return; // Lật rồi hoặc nổ bom rồi thì cấm bấm
+
+            // Lật thẻ ngay lập tức trên giao diện
+            card.IsFlipped = true;
+
+            // Đẩy âm thanh ra chạy ngầm (Không dùng await)
+            if (card.CardType == "Bomb")
+            {
+                IsMatrixGameOver = true; // Dừng game
+                string boomSound = "https://www.soundjay.com/mechanical/sounds/explosion-01.mp3";
+                _ = VoiceService.PlayEffectAndSpeakAsync(boomSound, card.TtsMessage);
+            }
+            else if (card.CardType == "Safe" || card.CardType == "Bonus")
+            {
+                string yaySound = "https://www.soundjay.com/human/sounds/applause-01.mp3";
+                _ = VoiceService.PlayEffectAndSpeakAsync(yaySound, card.TtsMessage);
+            }
+            else
+            {
+                _ = VoiceService.SpeakAsync(card.TtsMessage);
             }
         }
     }

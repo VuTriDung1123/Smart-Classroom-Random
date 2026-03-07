@@ -104,6 +104,100 @@
                     </Grid>
                 </Border>
 
+                <Rectangle Height="2" Fill="#32343E" Margin="0,20" RadiusX="1" RadiusY="1"/>
+                <TextBlock Text="🎴 Cài Đặt Ma Trận Lật Thẻ" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,0,0,15"/>
+
+                <Border Background="#2B2D35" CornerRadius="12" Padding="20" Margin="0,0,0,30">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,20">
+                            <TextBlock Text="Kích thước bảng:" Foreground="#A0A0A5" Margin="0,0,0,5"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#1E1E24" CornerRadius="5">
+                                    <TextBox Text="{Binding MatrixRows}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="10" Width="40" TextAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="x" Foreground="White" VerticalAlignment="Center" Margin="10,0"/>
+                                <Border Background="#1E1E24" CornerRadius="5">
+                                    <TextBox Text="{Binding MatrixCols}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="10" Width="40" TextAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="(Hàng x Cột)" Foreground="#A0A0A5" VerticalAlignment="Center" Margin="10,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="Số lượng thẻ [Câu hỏi]:" Foreground="#A0A0A5" Margin="0,0,0,5"/>
+                            <Border Background="#1E1E24" CornerRadius="5">
+                                <TextBox Text="{Binding MatrixCountNormal}" Background="Transparent" Foreground="#4A90E2" FontWeight="Bold" BorderThickness="0" Padding="10"/>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="10,0,10,0">
+                            <TextBlock Text="Số lượng thẻ [An toàn]:" Foreground="#A0A0A5" Margin="0,0,0,5"/>
+                            <Border Background="#1E1E24" CornerRadius="5">
+                                <TextBox Text="{Binding MatrixCountSafe}" Background="Transparent" Foreground="#2ECC40" FontWeight="Bold" BorderThickness="0" Padding="10"/>
+                            </Border>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="2" Margin="10,0,0,0">
+                            <TextBlock Text="Số lượng thẻ [Bonus / Bom]:" Foreground="#A0A0A5" Margin="0,0,0,5"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Background="#1E1E24" CornerRadius="5">
+                                    <TextBox Text="{Binding MatrixCountBonus}" Background="Transparent" Foreground="#FFD700" FontWeight="Bold" BorderThickness="0" Padding="10" Width="40" TextAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text=" / " Foreground="White" VerticalAlignment="Center" Margin="10,0"/>
+                                <Border Background="#1E1E24" CornerRadius="5">
+                                    <TextBox Text="{Binding MatrixCountBomb}" Background="Transparent" Foreground="#FF4136" FontWeight="Bold" BorderThickness="0" Padding="10" Width="40" TextAlignment="Center"/>
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <TextBlock Text="📝 Tùy chỉnh Dòng chú thích phía dưới bảng:" Foreground="#A0A0A5" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                <Border Background="#2B2D35" CornerRadius="12" Padding="20" Margin="0,0,0,30">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="❓ Câu hỏi:" Foreground="#4A90E2" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,15"/>
+                        <Border Grid.Row="0" Grid.Column="1" Background="#1E1E24" CornerRadius="5" Margin="0,0,0,15">
+                            <TextBox Text="{Binding MatrixDescNormal}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="10"/>
+                        </Border>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="🛡️ An toàn:" Foreground="#2ECC40" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,15"/>
+                        <Border Grid.Row="1" Grid.Column="1" Background="#1E1E24" CornerRadius="5" Margin="0,0,0,15">
+                            <TextBox Text="{Binding MatrixDescSafe}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="10"/>
+                        </Border>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="⭐ +1 Điểm:" Foreground="#FFD700" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,15"/>
+                        <Border Grid.Row="2" Grid.Column="1" Background="#1E1E24" CornerRadius="5" Margin="0,0,0,15">
+                            <TextBox Text="{Binding MatrixDescBonus}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="10"/>
+                        </Border>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="💣 Bom:" Foreground="#FF4136" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <Border Grid.Row="3" Grid.Column="1" Background="#1E1E24" CornerRadius="5">
+                            <TextBox Text="{Binding MatrixDescBomb}" Background="Transparent" Foreground="White" BorderThickness="0" Padding="10"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
             </StackPanel>
         </ScrollViewer>
     </Grid>
